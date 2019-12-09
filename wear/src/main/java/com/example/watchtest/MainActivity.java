@@ -39,8 +39,7 @@ import java.util.List;
 public class MainActivity extends WearableActivity implements
         DataClient.OnDataChangedListener,
         MessageClient.OnMessageReceivedListener,
-        CapabilityClient.OnCapabilityChangedListener
-{
+        CapabilityClient.OnCapabilityChangedListener {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -66,16 +65,18 @@ public class MainActivity extends WearableActivity implements
         //mContainerView = (BoxInsetLayout) findViewById(R.id.container);
         mTextView = (TextView) findViewById(R.id.text);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
-                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
-                .addApi(Wearable.API)
-                .build();
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
+//                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
+//                .addApi(Wearable.API)
+//                .build();
+//
+//        mGoogleApiClient.connect();
 
-        mGoogleApiClient.connect();
-
+        // SensorManager
         mSensorManager = ((SensorManager)getSystemService(SENSOR_SERVICE));
         mHeartRateSensor = mSensorManager.getDefaultSensor((Sensor.TYPE_HEART_RATE));
+        // Initialize API client for sending data to phone
         mDataClient = Wearable.getDataClient(this);
     }
 
@@ -86,14 +87,15 @@ public class MainActivity extends WearableActivity implements
         if (mHeartRateSensor != null) {
             Log.d(LOG_TAG, "HEART RATE SENSOR NAME: " + mHeartRateSensor.getName() + " TYPE: "
             + mHeartRateSensor.getType());
-            mSensorManager.unregisterListener(this, this.mHeartRateSensor);
-            boolean isRegistered = mSensorManager.registerListener(this, mHeartRateSensor,
-                    SensorManager.SENSOR_DELAY_FASTEST);
+            mSensorManager.unregisterListener((SensorEventListener) this, this.mHeartRateSensor);
+            boolean isRegistered = mSensorManager.registerListener((SensorEventListener) this,
+                    mSensorManager.getDefaultSensor(21), 2);
+
             Log.d(LOG_TAG, "HEART RATE LISTENER REGISTERED: " + isRegistered);
         } else{
             Log.d(LOG_TAG, "NO HEART RATE SENSOR");
         }
-       // sendMessageToHandheld("0");
+        mDataClient.Wearable.getDataClient(this);
     }
 
 
@@ -140,12 +142,12 @@ public class MainActivity extends WearableActivity implements
     @Override
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
-        updateDisplay();
+        //updateDisplay();
     }
     @Override
     public void onUpdateAmbient() {
         super.onUpdateAmbient();
-        updateDisplay();
+        //updateDisplay();
     }
     @Override
     public void onExitAmbient() {
